@@ -5,6 +5,7 @@ import { Button } from '../components/Button';
 import { RoomCode } from '../components/RoomCode';
 
 import logoImg from '../assets/images/logo.svg';
+import deleteImg from '../assets/images/delete.svg';
 
 import '../styles/room.scss';
 
@@ -13,6 +14,8 @@ import '../styles/room.scss';
 
 import { Question } from '../components/Question';
 import { useRoom } from '../hooks/useRoom';
+import { database } from '../services/firebase';
+import { toast } from 'react-toastify';
 
 type RoomParamsProps = {
     id: string;
@@ -24,6 +27,14 @@ export function AdminRoom() {
     const roomId = params.id;
 
     const { questions, title } = useRoom(roomId);
+
+    async function handleDeleteQuestion(questionId:string){
+        if(window.confirm("Tem certeza que deseja excluir essa pergunta ?")){
+            await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()  
+            toast.success("Pergunta excluida com sucesso!")
+        }
+
+    }
 
     return (
         <div id="page-room">
@@ -49,7 +60,14 @@ export function AdminRoom() {
                             key={question.id}
                             author={question.author}
                             content={question.content}
-                        />
+                        >
+                            <button
+                                type="button"
+                                onClick={()=>handleDeleteQuestion(question.id)}
+                            >
+                                <img src={deleteImg} alt="Remover" />
+                            </button>
+                        </Question>
                     ))}
                 </div>
             </main>
