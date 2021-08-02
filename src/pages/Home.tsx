@@ -12,6 +12,7 @@ import logoImg from '../assets/images/logo.svg';
 import googleIconImg from '../assets/images/google-icon.svg';
 
 import '../styles/auth.scss';
+import { toast } from 'react-toastify';
 
 export function Home() {
     const [roomCode, setRoomCode] = useState('');
@@ -38,7 +39,12 @@ export function Home() {
         const roomRef = await database.ref(`rooms/${roomCode}`).get();
 
         if(!roomRef.exists()){
-            alert('Room does not exists');
+            toast.error("Essa sala não existe")
+            return;
+        }
+
+        if(roomRef.val().endedAt){
+            toast.error("Essa sala já foi encerrada")
             return;
         }
 
